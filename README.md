@@ -8,3 +8,9 @@ Create the directory that will house project:
 mkdir livegollection-example-app
 cd livegollection-example-app
 ```
+## Initialize the Golang module
+Use go mod init to initialize the Golang module for the app:
+```bash
+go mod init module-name
+```
+In my case module-name is github.com/m1gwings/livegollection-example-app.
