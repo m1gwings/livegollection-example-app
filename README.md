@@ -188,7 +188,7 @@ I'd like to emphasize (as mentioned in the comment) that it's IMPORTANT to set t
 ## Implement server executable
 We need to write backend logic in order to serve static content (that will be added to the project in the next step) and register livegollection handler to the HTTP server.
 
-In particular for the second point we need to download and add to our dependencies the livegollection library:
+In particular for the second point we need to download and add to our dependencies the **livegollection** library:
 ```bash
 go get github.com/m1gwings/livegollection
 ```
@@ -245,7 +245,7 @@ func main() {
 	log.Fatal(http.ListenAndServe("localhost:8080", nil))
 }
 ```
-As you can see, once you have implemented the collection, it's very easy to start using livegollection: you just need to create an istance of LiveGollection (with NewLiveGollection factory function) and register a route handled by liveGoll.Join.
+As you can see, once you have implemented the collection, it's very easy to start using **livegollection**: you just need to create an istance of LiveGollection (with NewLiveGollection factory function) and register a route handled by liveGoll.Join.
 ## Add static content
 We need to add an HTML page and some CSS to display the chat to our users.
 
@@ -270,9 +270,9 @@ cat index.html
 <body>
     <div class="chat">
         <p>livegollection Chat</p>
-        <div class="inbox" id="inbox"></div>
+        <div class="inbox" id="inbox-div"></div>
         <div class="send-bar">
-            <input type="text" id="message-text" value="" />
+            <input type="text" id="message-text-input" value="" />
             <input type="button" id="send-button" value="Send" />
         </div>
         <div class="bottom-white-space"></div>
@@ -370,3 +370,127 @@ input[type=button] {
     background-color: #9A8C98;
 }
 ```
+## Implement client-side logic
+To make the chat actually working we need to implement the JavaScript script that will interact with the server and manage the DOM.
+
+To interact with the server we'll use **[livegollection-client](https://github.com/m1gwings/livegollection-client)** which is the JavaScript/TypeScript client library for **livegollection**.
+
+**livegollection-client** is distributed on npm, furthermore we'll use webpack to bundle our script. So let's setup npm and add our dependencies:
+```bash
+cd .. # (If you are inside static directory)
+npm init -y
+npm install livegollection-client
+npm install webpack webpack-cli --save-dev
+```
+
+Create the directory where we'll write our script:
+```bash
+mkdir src
+cd src
+```
+
+and add the following JavaScript code inside `index.js`:
+```bash
+cat index.js
+```
+```javascript
+import LiveGollection from "../node_modules/livegollection-client/dist/index.js";
+
+function generateClientTag() {
+    return Math.random().toString(36).substr(2, 6);
+}
+
+const clientTag = generateClientTag();
+const me = `Client#${clientTag}`;
+
+function getMessageDivId(id) {
+    return  `message-${id}`;
+}
+
+let inboxDiv = null;
+let liveGoll = null;
+
+function addMessageToInbox(message) {
+    const sentByMe = me == message.sender;
+
+    const messageDiv = document.createElement("div");
+    messageDiv.id = getMessageDivId(message.id);
+    messageDiv.className = sentByMe ? "mine" : "others";
+    messageDiv.className += " message";
+
+    if (!sentByMe) {
+        const senderP = document.createElement("p");
+        senderP.className = "sender";
+        senderP.innerHTML = message.sender;
+        messageDiv.appendChild(senderP);
+    }
+
+    const messageTextInput = document.createElement("input");
+    messageTextInput.type = "text";
+    messageTextInput.value = message.text;
+    messageDiv.appendChild(messageTextInput);
+
+    if (sentByMe) {
+        const editButton = document.createElement("input");
+        editButton.type = "button";
+        editButton.value = "Edit";
+        editButton.onclick = () => {
+            message.text = messageTextInput.value;
+            liveGoll.update(message);
+        };
+        messageDiv.appendChild(editButton);
+
+        const deleteButton = document.createElement("input");
+        deleteButton.type = "button";
+        deleteButton.value = "Delete";
+        deleteButton.onclick = () => {
+            liveGoll.delete(message);
+        };
+        messageDiv.appendChild(deleteButton);
+    }
+
+    const sentTimeP = document.createElement("p");
+    sentTimeP.className = "time";
+    sentTimeP.innerHTML = new Date(message.sentTime).toLocaleTimeString();
+    messageDiv.appendChild(sentTimeP);
+
+    inboxDiv.appendChild(messageDiv);
+}
+
+window.onload = () => {
+    liveGoll = new LiveGollection("ws://localhost:8080/livegollection");
+
+    const messageTextInput = document.getElementById("message-text-input");
+    const sendButton = document.getElementById("send-button");
+
+    sendButton.onclick = () => {
+        liveGoll.create({
+            sender: me,
+            sentTime: new Date(),
+            text: messageTextInput.value,
+        });
+    };
+
+    inboxDiv = document.getElementById("inbox-div");
+
+    liveGoll.oncreate = (message) => {
+        addMessageToInbox(message, inboxDiv);
+    };
+
+    liveGoll.onupdate = (message) => {
+        const messageToUpdateTextInput = document.getElementById(getMessageDivId(message.id))
+            .getElementsByTagName('input')[0];
+        messageToUpdateTextInput.value = message.text;
+    };
+
+    liveGoll.ondelete = (message) => {
+        const messageToDeleteDiv = document.getElementById(getMessageDivId(message.id));
+        messageToDeleteDiv.remove();
+    };
+};
+```
+**livegollection-client** is as simple to use as **livegollection**: we need to create a LiveGollection object passing to the constructor the url to the **livegollection** server-side handler (in this case ws://localhost:8080/livegollection).
+
+After the LiveGollection object has been created we need to set the event handlers **oncreate**, **onupdate** and **ondelete** to handle the correspondant events relative to messages. In this case to handle the events we need to update the DOM by adding a div for the new message or by modifying/deleting the existing one.
+
+We can send events to the server with the following methods: **create**, **update**, **delete**. In this case we use **create** to send a new message and **update**/**delete** to edit/delete an existing one sent by us.

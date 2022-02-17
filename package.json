@@ -1,0 +1,27 @@
+{
+  "name": "livegollection-example-app",
+  "version": "1.0.0",
+  "description": "livegollection-example-app is a simple web-chat app that demonstrates how the Golang livegollection library can be used for live data synchronization between multiple web clients and the server. The app allows to exchange text messages inside a chat room, livegollection will take care of notifying each client when a new message has been sent and keep everything consistent with the collection of messages stored in a SQLite database by the server.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/m1gwings/livegollection-example-app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/m1gwings/livegollection-example-app/issues"
+  },
+  "homepage": "https://github.com/m1gwings/livegollection-example-app#readme",
+  "dependencies": {
+    "livegollection-client": "^0.2.1"
+  },
+  "devDependencies": {
+    "webpack": "^5.69.1",
+    "webpack-cli": "^4.9.2"
+  }
+}
