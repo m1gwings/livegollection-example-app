@@ -186,7 +186,7 @@ func (c *Chat) Delete(ID int64) error {
 ```
 I'd like to emphasize (as mentioned in the comment) that it's IMPORTANT to set the message ID retreived from the database when we add a new message to the chat in Create.
 ## Implement server executable
-We need to write backend logic in order to serve static contents (that will be added to the project in the next steps) and register livegollection handler to the HTTP server.
+We need to write backend logic in order to serve static content (that will be added to the project in the next step) and register livegollection handler to the HTTP server.
 
 In particular for the second point we need to download and add to our dependencies the livegollection library:
 ```bash
@@ -246,3 +246,127 @@ func main() {
 }
 ```
 As you can see, once you have implemented the collection, it's very easy to start using livegollection: you just need to create an istance of LiveGollection (with NewLiveGollection factory function) and register a route handled by liveGoll.Join.
+## Add static content
+We need to add an HTML page and some CSS to display the chat to our users.
+
+Create a directory for static content:
+```bash
+cd .. # (If you are inside server directory)
+mkdir static
+cd static
+```
+Add the following HTML page in `index.html`:
+```bash
+cat index.html
+```
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>livegollection Chat</title>
+    <script src="bundle.js"></script>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div class="chat">
+        <p>livegollection Chat</p>
+        <div class="inbox" id="inbox"></div>
+        <div class="send-bar">
+            <input type="text" id="message-text" value="" />
+            <input type="button" id="send-button" value="Send" />
+        </div>
+        <div class="bottom-white-space"></div>
+    </div>
+</body>
+</html>
+```
+and some styling in `style.css`:
+```bash
+cat style.css
+```
+```css
+* {
+    color: #22223B;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0%;
+}
+
+body {
+    background-color: #F2E9E4;
+}
+
+.chat {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    align-items: center;
+}
+
+.inbox {
+    display: flex;
+    flex-direction: column;
+    width: 500px;
+    height: 100%;
+    overflow: scroll;
+}
+
+.mine {
+    align-self: flex-end;
+}
+
+.others {
+    align-self: flex-start;
+}
+
+.message {
+    width: fit-content;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    background-color:#C9ADA7;
+    padding: 5px;
+}
+
+.sender {
+    font-size: small;
+    margin: 0px;
+}
+
+.time {
+    font-size: xx-small;
+    margin: 0px;
+}
+
+.send-bar {
+    display: flex;
+    flex-direction: row;
+    height: 50px;
+    width: 250px;
+    justify-content: center;
+    border-radius: 5px;
+    background-color: #C9ADA7;
+    padding: 5px;
+}
+
+.bottom-white-space {
+    height: 50px;
+}
+
+input {
+    border: 0px;
+    margin-left: 10px;
+    border-radius: 5px;
+}
+
+input[type=text] {
+    background-color: transparent;
+}
+
+input[type=button] {
+    background-color: #9A8C98;
+}
+```
