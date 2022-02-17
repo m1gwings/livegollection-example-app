@@ -494,3 +494,11 @@ window.onload = () => {
 After the LiveGollection object has been created we need to set the event handlers **oncreate**, **onupdate** and **ondelete** to handle the correspondant events relative to messages. In this case to handle the events we need to update the DOM by adding a div for the new message or by modifying/deleting the existing one.
 
 We can send events to the server with the following methods: **create**, **update**, **delete**. In this case we use **create** to send a new message and **update**/**delete** to edit/delete an existing one sent by us.
+## Run the app!
+To run the app we need to bundle our script with webpack and start the server:
+```bash
+cd .. # (If you are inside src directory)
+npx webpack --mode production --entry ./src/index.js --output-filename bundle.js -o ./static
+cd server
+go run main.go
+```
