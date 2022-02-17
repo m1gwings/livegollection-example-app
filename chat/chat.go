@@ -1,68 +1,3 @@
-# livegollection-example-app
-**livegollection-example-app** is a simple web-chat app that demonstrates how the Golang **[livegollection](https://github.com/m1gwings/livegollection)** library can be used for live data synchronization between multiple web clients and the server.
-The app allows to exchange text messages inside a chat room, **livegollection** will take care of notifying each client when a new message has been sent and keep everything consistent with the collection of messages stored in a SQLite database by the server.
-# Step-by-step guide
-The following guide will explain step-by-step how to create this web-app and how to use **livegollection**.
-## Project setup
-Create the directory that will house project:
-```bash
-mkdir livegollection-example-app
-cd livegollection-example-app
-```
-## Initialize the Golang module
-Use go mod init to initialize the Golang module for the app:
-```bash
-go mod init module-name
-```
-In my case module-name is github.com/m1gwings/livegollection-example-app.
-## Implement the Chat collection
-In order to use the **livegollection** library we need to implement a collection that satisfies the **livegollection.Collection** interface.
-We'll define this collection inside the **chat** package.
-
-Create a directory for the chat package:
-```bash
-mkdir chat
-cd chat
-```
-As we said our backend will store the messages of the chat inside a SQLite database, so, first of all,
-add `queries.go` inside the chat package in order to define the needed SQL query templates:
-```bash
-cat queries.go
-```
-```go
-package chat
-
-const createChatTable = `CREATE TABLE IF NOT EXISTS chat (
-	id INTEGER PRIMARY KEY AUTOINCREMENT,
-	sender VARCHAR,
-	sent_time DATETIME,
-	text TEXT
-);`
-
-const insertMessageIntoChat = `INSERT INTO chat(sender, sent_time, text)
-	VALUES(?, ?, ?);`
-
-const updateMessageInChat = `UPDATE chat
-	SET text = ?
-	WHERE id = ?;`
-
-const deleteMessageFromChat = `DELETE from chat
-	WHERE id = ?;`
-
-const getAllMessagesFromChat = `SELECT * FROM chat;`
-
-const getMessageFromChat = `SELECT * FROM chat WHERE id = ?;`
-
-```
-To execute the queries above we need a SQLite driver. Let's download it and add to our dependencies:
-```bash
-go get github.com/mattn/go-sqlite3
-```
-Now it's time to implement the actual collection inside `chat.go`:
-```bash
-cat chat.go
-```
-```go
 package chat
 
 import (
@@ -183,5 +118,3 @@ func (c *Chat) Delete(ID int64) error {
 
 	return nil
 }
-```
-I'd like to emphasize (as mentioned in the comment) that it's IMPORTANT to set the message ID retreived from the database when we add a new message to the chat in Create.
