@@ -185,3 +185,64 @@ func (c *Chat) Delete(ID int64) error {
 }
 ```
 I'd like to emphasize (as mentioned in the comment) that it's IMPORTANT to set the message ID retreived from the database when we add a new message to the chat in Create.
+## Implement server executable
+We need to write backend logic in order to serve static contents (that will be added to the project in the next steps) and register livegollection handler to the HTTP server.
+
+In particular for the second point we need to download and add to our dependencies the livegollection library:
+```bash
+go get github.com/m1gwings/livegollection
+```
+
+Create a directory for the server executable:
+```bash
+cd .. # (If you are inside chat directory)
+mkdir server
+cd server
+```
+
+Write the code for the server inside `main.go`:
+```bash
+cat main.go
+```
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+	"net/http"
+
+	"github.com/m1gwings/livegollection"
+	"module-name/chat"
+)
+
+func main() {
+	for r, fP := range map[string]string{
+		"/":          "../static/index.html",
+		"/bundle.js": "../static/bundle.js",
+		"/style.css": "../static/style.css",
+	} {
+		// Prevents passing loop variables to a closure.
+		route, filePath := r, fP
+		http.HandleFunc(route, func(w http.ResponseWriter, r *http.Request) {
+			http.ServeFile(w, r, filePath)
+		})
+	}
+
+	coll, err := chat.NewChat()
+	if err != nil {
+		log.Fatal(fmt.Errorf("error when creating new chat: %v", err))
+	}
+
+	// When we create the LiveGollection we need to specify the type parameters for items' id and items themselves.
+	// (In this case int64 and *chat.Message)
+	liveGoll := livegollection.NewLiveGollection[int64, *chat.Message](context.TODO(), coll, log.Default())
+
+	// After we created liveGoll, to enable it we just need to register a route handled by liveGoll.Join.
+	http.HandleFunc("/livegollection", liveGoll.Join)
+
+	log.Fatal(http.ListenAndServe("localhost:8080", nil))
+}
+```
+As you can see, once you have implemented the collection, it's very easy to start using livegollection: you just need to create an istance of LiveGollection (with NewLiveGollection factory function) and register a route handled by liveGoll.Join.

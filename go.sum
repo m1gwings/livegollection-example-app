@@ -1,2 +1,6 @@
+github.com/gorilla/websocket v1.4.2 h1:+/TMaTYc4QFitKJxsQ7Yye35DkWvkdLcvGKqM+x0Ufc=
+github.com/gorilla/websocket v1.4.2/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/adAjf1fMHhE=
+github.com/m1gwings/livegollection v0.1.0 h1:x2bwtv479o6Qhx/Ka2f/LpVZRRwf1fqovApXsewwjwI=
+github.com/m1gwings/livegollection v0.1.0/go.mod h1:5SjLE7C8wxf6VtnLXA+TJHYNhwejpcF+u5DyxLuKj2Y=
 github.com/mattn/go-sqlite3 v1.14.11 h1:gt+cp9c0XGqe9S/wAHTL3n/7MqY+siPWgWJgqdsFrzQ=
 github.com/mattn/go-sqlite3 v1.14.11/go.mod h1:NyWgC/yNuGj7Q9rpYnZvas74GogHl5/Z4A/KQRfk6bU=
