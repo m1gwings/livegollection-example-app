@@ -18,7 +18,7 @@
   },
   "homepage": "https://github.com/m1gwings/livegollection-example-app#readme",
   "dependencies": {
-    "livegollection-client": "^0.2.1"
+    "livegollection-client": "^0.2.2"
   },
   "devDependencies": {
     "webpack": "^5.69.1",
