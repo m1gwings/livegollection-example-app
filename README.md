@@ -502,3 +502,17 @@ npx webpack --mode production --entry ./src/index.js --output-filename bundle.js
 cd server
 go run main.go
 ```
+## Try the app!
+To try the app you need to open two browser windows and connect them to http://localhost:8080 .
+
+You can send some messages:
+
+![There are two different browser windows opened: each one is on http://localhost:8080 where the chat app is deployed. Two messages get sent: one from the left window which says "Hi!" and one from the right window which says "Hey!".](gifs/send.gif)
+
+edit:
+
+![The message sent from the right window gets edited: the new text is "How are you?"](gifs/edit.gif)
+
+or delete a message that you have sent:
+
+![The message sent from the left window gets deleted](gifs/delete.gif)
